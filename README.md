@@ -61,15 +61,15 @@ It demonstrates end‑to‑end data analytics skills:
 
 ### 🔹 Tableau
 1. Open `Mental_Health_Analysis.twbx` in Tableau Desktop or Tableau Public.
-2. Explore the interactive dashboards.
+2. Explore the dashboard.
 
 ---
 
 ---
 
 ## Author
-**Haribabu Ambati – MSBA International Student**  
-💼 *Passionate about Business Analytics, Data Visualization, and Data‑driven insights.*
+**Haribabu Ambati – MSBA International Student at Barton Business School, Wichita State University**  
+*Passionate about Business Analytics, Data Visualization, and Data‑driven insights.*
 
 ⭐ If you like this project, feel free to star the repo.
 Thank you.
