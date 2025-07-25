@@ -1,0 +1,121 @@
+# 1. Import sqlite3 (already comes with Python)
+import sqlite3
+import pandas as pd
+
+# 2. Create a database in memory (temporary) or on disk (permanent)
+# For now, let's do in-memory:
+conn = sqlite3.connect(':memory:')  # this creates a temporary DB
+print("✅ SQLite database created successfully")
+
+
+# Load your cleaned CSV into a pandas DataFrame
+df = pd.read_csv('/content/drive/MyDrive/Colab Projects/MH_DSCRP_PRED_ANLYTCS/survey_cleaned.csv')
+
+df.head()
+
+# ------------------------------------------
+# 2. Push the DataFrame into the SQLite database
+# ------------------------------------------
+# conn is the database connection we created earlier
+# 'survey' is the name we give to the new SQL table
+# if_exists='replace' means: if there is already a table named survey, overwrite it
+# index=False means: don't add the pandas index as an extra column
+df.to_sql('survey', conn, index=False, if_exists='replace')
+
+print("✅ Table 'survey' created in SQLite with", len(df), "rows.")
+
+
+# ------------------------------------------
+# 3. Verify the table exists in SQLite
+# ------------------------------------------
+# We ask SQLite: show me all table names in this database
+tables = pd.read_sql("SELECT name FROM sqlite_master WHERE type='table';", conn)
+print("✅ Tables currently in this database:")
+print(tables)
+
+# ------------------------------------------
+# Count how many rows are in the survey table
+# ------------------------------------------
+query = "SELECT COUNT(*) AS total_records FROM survey;"
+
+result = pd.read_sql(query, conn)
+print("✅ Total rows in the table:")
+print(result)
+
+
+# ------------------------------------------
+# Fetch first 5 rows from the table using SQL
+# ------------------------------------------
+query = "SELECT * FROM survey LIMIT 5;"
+
+result = pd.read_sql(query, conn)
+print("✅ First 5 rows from SQL:")
+print(result)
+
+# ------------------------------------------
+# Count how many said Yes or No to treatment
+# ------------------------------------------
+query = """
+SELECT treatment,
+       COUNT(*) AS count,
+       ROUND(CAST(COUNT(*) AS FLOAT) * 100 / (SELECT COUNT(*) FROM survey), 2) AS percentage
+FROM survey
+GROUP BY treatment;
+"""
+
+result = pd.read_sql(query, conn)
+print("✅ Treatment counts and percentages:")
+print(result)
+
+
+# ------------------------------------------
+# Treatment rate grouped by Gender
+# ------------------------------------------
+query = """
+SELECT Gender,
+       COUNT(*) AS total_count,
+       SUM(CASE WHEN treatment='Yes' THEN 1 ELSE 0 END) AS treated_count,
+       ROUND(SUM(CASE WHEN treatment='Yes' THEN 1 ELSE 0 END)*100.0/COUNT(*), 2) AS treatment_rate
+FROM survey
+GROUP BY Gender;
+"""
+
+result = pd.read_sql(query, conn)
+print("✅ Treatment rate by Gender:")
+print(result)
+
+
+# ------------------------------------------
+# Top 10 countries by treatment rate
+# ------------------------------------------
+query = """
+SELECT Country,
+       COUNT(*) AS total_count,
+       SUM(CASE WHEN treatment='Yes' THEN 1 ELSE 0 END) AS treated_count,
+       ROUND(SUM(CASE WHEN treatment='Yes' THEN 1 ELSE 0 END)*100.0/COUNT(*), 2) AS treatment_rate
+FROM survey
+GROUP BY Country
+ORDER BY treatment_rate DESC
+LIMIT 10;
+"""
+
+result = pd.read_sql(query, conn)
+print("✅ Top 10 countries by treatment rate:")
+print(result)
+
+
+# ------------------------------------------
+# Treatment rate grouped by family history
+# ------------------------------------------
+query = """
+SELECT family_history,
+       COUNT(*) AS total_count,
+       SUM(CASE WHEN treatment='Yes' THEN 1 ELSE 0 END) AS treated_count,
+       ROUND(SUM(CASE WHEN treatment='Yes' THEN 1 ELSE 0 END)*100.0/COUNT(*), 2) AS treatment_rate
+FROM survey
+GROUP BY family_history;
+"""
+
+result = pd.read_sql(query, conn)
+print("✅ Treatment rate by Family History:")
+print(result)
