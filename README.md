@@ -65,4 +65,13 @@ It demonstrates end‑to‑end data analytics skills:
 
 ---
 
-## 📂 Repository Structure
+---
+
+## Author
+**Haribabu Ambati – MSBA International Student**  
+💼 *Passionate about Business Analytics, Data Visualization, and Data‑driven insights.*
+
+⭐ If you like this project, feel free to star the repo.
+Thank you.
+
+
